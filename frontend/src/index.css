@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------- */
+/* Design tokens — "instrument panel" system                              */
+/* Deep ink-navy base, brass + verdigris metal accents, warm parchment    */
+/* text. Evokes a ship's chart room / navigation instrument, not a        */
+/* generic SaaS dashboard.                                                */
+/* ---------------------------------------------------------------------- */
+@theme {
+  --color-ink: #10182a;
+  --color-ink-raised: #1a2338;
+  --color-ink-line: #2a3552;
+  --color-brass: #c89b4a;
+  --color-brass-soft: #e4c888;
+  --color-brass-dim: #8a6f3d;
+  --color-verdigris: #5fa8a0;
+  --color-verdigris-soft: #8ec4bd;
+  --color-parchment: #ede7d9;
+  --color-parchment-dim: #a9a48e;
+  --color-signal: #d9694f;
+  --color-signal-soft: #e8998a;
+
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+
+  --shadow-panel: 0 1px 0 0 rgba(237, 231, 217, 0.04) inset, 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-parchment);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  background-image:
+    linear-gradient(rgba(200, 155, 74, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 155, 74, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center top;
+}
+
+::selection {
+  background-color: var(--color-brass);
+  color: var(--color-ink);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-ink);
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-ink-line);
+  border-radius: 999px;
+  border: 2px solid var(--color-ink);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-brass-dim);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+.panel {
+  background-color: var(--color-ink-raised);
+  border: 1px solid var(--color-ink-line);
+  box-shadow: var(--shadow-panel);
+}

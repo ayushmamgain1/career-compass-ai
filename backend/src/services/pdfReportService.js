@@ -1,11 +1,5 @@
 import PDFDocument from "pdfkit";
 
-/**
- * Module 12: PDF Report Generation
- * Generates a full career report PDF and streams it directly to the response.
- * @param {Object} res - Express response object (used as write stream target)
- * @param {Object} data - { user, resume, jobMatches, skillGap, roadmap, interviews }
- */
 const generateCareerReport = (res, data) => {
   const { user, resume, jobMatches = [], skillGap, roadmap, interviews = [] } = data;
 

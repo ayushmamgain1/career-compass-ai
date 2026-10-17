@@ -4,9 +4,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash";
 const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
-/**
- * Low-level call to Gemini API. Returns the raw text response.
- */
+
 const callGemini = async (prompt, { temperature = 0.4 } = {}) => {
   if (!GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY is not configured in environment variables");
@@ -26,9 +24,6 @@ const callGemini = async (prompt, { temperature = 0.4 } = {}) => {
   return text;
 };
 
-/**
- * Strips markdown code fences and parses a JSON response from Gemini
- */
 const parseJSONResponse = (rawText) => {
   const cleaned = rawText.replace(/```json|```/g, "").trim();
   try {
@@ -38,10 +33,6 @@ const parseJSONResponse = (rawText) => {
   }
 };
 
-/**
- * Module 3: AI Resume Analysis
- * Reviews resume quality, detects gaps, suggests improvements, rewrites weak points
- */
 const analyzeResume = async (resumeText) => {
   const prompt = `
 You are an expert resume reviewer and career coach. Analyze the following resume text.
@@ -63,9 +54,6 @@ ${resumeText}
   return parseJSONResponse(raw);
 };
 
-/**
- * Module 9: Personalized Learning Roadmap
- */
 const generateLearningRoadmap = async (currentSkills, missingSkills, careerGoal) => {
   const prompt = `
 You are a career mentor creating a personalized learning roadmap.
@@ -88,9 +76,6 @@ Create a realistic week-by-week plan (max 12 weeks) that builds skills in a logi
   return parseJSONResponse(raw);
 };
 
-/**
- * Module 10: AI Mock Interview - generate questions
- */
 const generateInterviewQuestions = async (role, difficulty = "intermediate", count = 5) => {
   const prompt = `
 Generate ${count} mock interview questions for the role of "${role}" at ${difficulty} difficulty.
@@ -105,9 +90,6 @@ Return ONLY valid JSON (no markdown) in this exact shape:
   return parseJSONResponse(raw);
 };
 
-/**
- * Module 10: AI Mock Interview - evaluate a single answer
- */
 const evaluateInterviewAnswer = async (question, answer, role) => {
   const prompt = `
 You are an interview coach evaluating a candidate's answer for a "${role}" position.
@@ -126,9 +108,6 @@ Return ONLY valid JSON (no markdown) in this exact shape:
   return parseJSONResponse(raw);
 };
 
-/**
- * Module 10: Overall interview performance summary
- */
 const generateInterviewSummary = async (qaHistory, role) => {
   const historyText = qaHistory
     .map((qa, i) => `Q${i + 1}: ${qa.question}\nA${i + 1}: ${qa.answer}\nScore: ${qa.score}/10`)
@@ -151,10 +130,6 @@ Return ONLY valid JSON (no markdown) in this exact shape:
   return parseJSONResponse(raw);
 };
 
-/**
- * Infers the best matching job title from a list of skills.
- * Returns only the job title as plain text.
- */
 const generateJobTitle = async (skills = []) => {
   const prompt = `
 You are an expert technical recruiter.

@@ -4,9 +4,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { analyzeResume } from "../services/geminiService.js";
 
-// @desc    Run AI analysis on a resume (quality review, suggestions, rewrites)
-// @route   POST /api/ai/analyze-resume/:resumeId
-// @access  Private
 const runResumeAnalysis = asyncHandler(async (req, res) => {
   const resume = await Resume.findOne({
     _id: req.params.resumeId,

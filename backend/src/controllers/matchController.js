@@ -7,9 +7,6 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { matchPercentage } from "../utils/cosineSimilarity.js";
 import { analyzeSkillGap } from "../utils/skillGapAnalyzer.js";
 
-// @desc    Compare the user's active resume against a specific job description
-// @route   POST /api/match/:jobId
-// @access  Private
 const matchResumeToJob = asyncHandler(async (req, res) => {
   const resume = await Resume.findOne({ user: req.user._id, isActive: true });
   if (!resume) throw new ApiError(404, "No active resume found. Please upload a resume first.");
@@ -50,10 +47,6 @@ const matchResumeToJob = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Run skill gap analysis against multiple jobs at once (e.g. all recommendations)
-// @route   POST /api/match/skill-gap/bulk
-// @access  Private
-// body: { jobIds: [id1, id2, ...] }
 const bulkSkillGapAnalysis = asyncHandler(async (req, res) => {
   const { jobIds = [] } = req.body;
 

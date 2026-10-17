@@ -3,9 +3,6 @@ import { Resume } from "../models/Resume.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-// @desc    Get aggregated dashboard data for the logged-in user
-// @route   GET /api/dashboard
-// @access  Private
 const getDashboardData = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 

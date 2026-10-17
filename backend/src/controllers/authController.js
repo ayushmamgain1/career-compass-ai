@@ -4,9 +4,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import generateToken from "../utils/generateToken.js";
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -28,9 +25,6 @@ const registerUser = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Authenticate user & get token
-// @route   POST /api/auth/login
-// @access  Public
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -56,9 +50,6 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Get logged-in user's profile
-// @route   GET /api/auth/profile
-// @access  Private
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
@@ -78,9 +69,6 @@ const getUserProfile = asyncHandler(async (req, res) => {
   res.json({ success: true, data: user });
 });
 
-// @desc    Update user profile (name, careerGoal, currentSkills)
-// @route   PUT /api/auth/profile
-// @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 

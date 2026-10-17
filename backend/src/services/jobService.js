@@ -5,11 +5,6 @@ import { matchPercentage } from "../utils/cosineSimilarity.js";
 const JOB_API_URL = process.env.JOB_API_URL;
 const JOB_API_KEY = process.env.JOB_API_KEY;
 
-/**
- * Module 6: Job Recommendation System
- * Fetches jobs from an external Job Search API (e.g. JSearch/RapidAPI) based on a
- * query string, normalizes them, and upserts into the local DB for caching/reuse.
- */
 const fetchJobsFromExternalAPI = async (query = "software developer", location = "") => {
   if (!JOB_API_URL || !JOB_API_KEY) {
     console.warn("Job API not configured - falling back to local dataset only");
@@ -61,10 +56,6 @@ const fetchJobsFromExternalAPI = async (query = "software developer", location =
   }
 };
 
-/**
- * Recommends jobs from the local DB best matching a user's skill set,
- * ranked by cosine similarity between skills text and job description.
- */
 const recommendJobsForTitle = async (jobTitle, limit = 10) => {
   if (!jobTitle?.trim()) return [];
 

@@ -6,9 +6,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { analyzeSkillGap } from "../utils/skillGapAnalyzer.js";
 
-// @desc    Generate a personalized learning roadmap based on skill gaps for a target job
-// @route   POST /api/roadmap/:jobId
-// @access  Private
 const createRoadmapForJob = asyncHandler(async (req, res) => {
   const resume = await Resume.findOne({ user: req.user._id, isActive: true });
   if (!resume) throw new ApiError(404, "No active resume found. Please upload a resume first.");
@@ -35,9 +32,6 @@ const createRoadmapForJob = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Generate a general roadmap based on the user's stated career goal
-// @route   POST /api/roadmap/general
-// @access  Private
 const createGeneralRoadmap = asyncHandler(async (req, res) => {
   const { targetSkills = [] } = req.body;
 

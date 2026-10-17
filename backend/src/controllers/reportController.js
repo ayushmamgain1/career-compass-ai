@@ -4,11 +4,9 @@ import { Resume } from "../models/Resume.js";
 import { recommendJobsForTitle } from "../services/jobService.js";
 import { generateCareerReport } from "../services/pdfReportService.js";
 import { ApiError } from "../utils/ApiError.js";
+import { analyzeSkillGap } from "../utils/skillGapAnalyzer.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-// @desc    Generate and download a full career report PDF
-// @route   GET /api/reports/download?jobId=optional
-// @access  Private
 const downloadCareerReport = asyncHandler(async (req, res) => {
   const resume = await Resume.findOne({ user: req.user._id, isActive: true });
   if (!resume) throw new ApiError(404, "No active resume found. Please upload a resume first.");

@@ -1,15 +1,5 @@
-/**
- * Module 8: Skill Gap Analysis (Machine Learning)
- * Compares a user's current skills against a job's required skills
- * to identify what's missing, what matches, and produce a readiness score.
- */
-
 const normalize = (skills) => skills.map((s) => s.trim().toLowerCase()).filter(Boolean);
 
-/**
- * @param {string[]} userSkills - skills extracted from resume
- * @param {string[]} requiredSkills - skills required by the target job/role
- */
 const analyzeSkillGap = (userSkills = [], requiredSkills = []) => {
   const normalizedUser = normalize(userSkills);
   const normalizedRequired = normalize(requiredSkills);
@@ -38,10 +28,6 @@ const analyzeSkillGap = (userSkills = [], requiredSkills = []) => {
   };
 };
 
-/**
- * Given missing skills across multiple prospective jobs, ranks which skills
- * would unlock the most opportunities if learned (simple frequency-based priority).
- */
 const prioritizeSkillsToLearn = (jobGapResults = []) => {
   const frequency = {};
 

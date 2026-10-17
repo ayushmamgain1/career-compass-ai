@@ -5,9 +5,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-// @desc    Search/fetch jobs from external API (cached into local DB)
-// @route   GET /api/jobs/search?query=frontend developer&location=remote
-// @access  Private
 const searchJobs = asyncHandler(async (req, res) => {
   const { query = "software developer", location = "" } = req.query;
   const jobs = await fetchJobsFromExternalAPI(query, location);
@@ -22,17 +19,11 @@ const searchJobs = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Get all jobs stored locally (dataset/cache)
-// @route   GET /api/jobs
-// @access  Private
 const getAllJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find().sort({ createdAt: -1 }).limit(100);
   res.json({ success: true, count: jobs.length, data: jobs });
 });
 
-// @desc    Get a single job by ID
-// @route   GET /api/jobs/:id
-// @access  Private
 const getJobById = asyncHandler(async (req, res) => {
   const job = await Job.findById(req.params.id);
   if (!job) throw new ApiError(404, "Job not found");
@@ -48,9 +39,6 @@ const getJobById = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Recommend jobs based on the user's active resume skills
-// @route   GET /api/jobs/recommendations
-// @access  Private
 const getJobRecommendations = asyncHandler(async (req, res) => {
   const resume = await Resume.findOne({ user: req.user._id, isActive: true });
 
@@ -74,9 +62,6 @@ const getJobRecommendations = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Manually add a job posting (admin/dataset seeding use)
-// @route   POST /api/jobs
-// @access  Private
 const createJob = asyncHandler(async (req, res) => {
   const job = await Job.create({ ...req.body, source: "manual" });
   res

@@ -4,10 +4,6 @@ import { generateInterviewQuestions, evaluateInterviewAnswer, generateInterviewS
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-// @desc    Start a new mock interview - generates questions for a role
-// @route   POST /api/interviews/start
-// @access  Private
-// body: { role, difficulty }
 const startInterview = asyncHandler(async (req, res) => {
   const { role, difficulty = "intermediate" } = req.body;
 
@@ -26,10 +22,6 @@ const startInterview = asyncHandler(async (req, res) => {
   res.status(201).json(new ApiResponse(201, { interview }, "Interview Started"));
 });
 
-// @desc    Submit an answer to a specific question in the interview, get AI feedback
-// @route   POST /api/interviews/:id/answer
-// @access  Private
-// body: { questionIndex, answer }
 const submitAnswer = asyncHandler(async (req, res) => {
   const { questionIndex, answer } = req.body;
 
@@ -65,9 +57,6 @@ const submitAnswer = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Complete the interview and generate an overall performance summary
-// @route   POST /api/interviews/:id/complete
-// @access  Private
 const completeInterview = asyncHandler(async (req, res) => {
   const interview = await Interview.findOne({ _id: req.params.id, user: req.user._id });
   if (!interview) throw new ApiError(404, "Interview session not found");
@@ -99,17 +88,11 @@ const completeInterview = asyncHandler(async (req, res) => {
   );
 });
 
-// @desc    Get all interviews for the logged-in user
-// @route   GET /api/interviews
-// @access  Private
 const getInterviews = asyncHandler(async (req, res) => {
   const interviews = await Interview.find({ user: req.user._id }).sort({ createdAt: -1 });
   res.json({ success: true, count: interviews.length, data: interviews });
 });
 
-// @desc    Get a single interview by ID
-// @route   GET /api/interviews/:id
-// @access  Private
 const getInterviewById = asyncHandler(async (req, res) => {
   const interview = await Interview.findOne({ _id: req.params.id, user: req.user._id });
   if (!interview) throw new ApiError(404, "Interview session not found");

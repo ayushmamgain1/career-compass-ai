@@ -1,15 +1,5 @@
 import { matchPercentage } from "../utils/cosineSimilarity.js";
 
-/**
- * Custom ATS Scoring Algorithm
- * Produces a score out of 100 based on weighted categories:
- *   - Keyword Match      (30 pts)
- *   - Formatting         (15 pts)
- *   - Skills             (25 pts)
- *   - Experience         (20 pts)
- *   - Education          (10 pts)
- */
-
 const WEIGHTS = {
   keywordMatch: 30,
   formatting: 15,
@@ -18,7 +8,6 @@ const WEIGHTS = {
   education: 10,
 };
 
-// Common ATS-unfriendly patterns to check for
 const scoreFormatting = (rawText) => {
   let score = WEIGHTS.formatting;
 
@@ -75,11 +64,6 @@ const scoreKeywordMatch = (rawText, jobDescription) => {
   return Math.round((percentage / 100) * WEIGHTS.keywordMatch);
 };
 
-/**
- * Calculates full ATS score for a resume, optionally against a job description
- * @param {Object} resume - { rawText, extractedSkills, parsedData }
- * @param {Object} [job] - { description, requiredSkills }
- */
 const calculateATSScore = (resume, job = null) => {
   const keywordMatch = scoreKeywordMatch(resume.rawText, job?.description);
   const formatting = scoreFormatting(resume.rawText);

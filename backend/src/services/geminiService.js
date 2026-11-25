@@ -1,27 +1,64 @@
 import axios from "axios";
+import { ApiError } from "../utils/ApiError.js";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash";
-const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+const GEMINI_MODEL = process.env.GEMINI_MODEL;
 
 
-const callGemini = async (prompt, { temperature = 0.4 } = {}) => {
+const callGemini = async (prompt, { temperature = 0.4 } = {}, fallbackModel = GEMINI_MODEL) => {
   if (!GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not configured in environment variables");
+    throw new ApiError(500, "Gemini API key is missing");
   }
 
-  const response = await axios.post(
-    `${BASE_URL}?key=${GEMINI_API_KEY}`,
-    {
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature },
-    },
-    { headers: { "Content-Type": "application/json" } }
-  );
+  const start = performance.now();
 
-  const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error("Empty response from Gemini API");
-  return text;
+  try {
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/${fallbackModel}:generateContent`,
+      {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: prompt }],
+          },
+        ],
+        generationConfig: {
+          temperature,
+          maxOutputTokens: 256,
+          responseMimeType: "application/json",
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
+        },
+      }
+    );
+
+    console.log(
+      `Gemini generation: ${((performance.now() - start) / 1000).toFixed(2)}s`
+    );
+
+    const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+      throw new ApiError(502, "Empty Gemini response");
+    }
+
+    return text;
+  } catch (error) {
+    console.error("Gemini error:", {
+      message: error.message,
+      code: error.code,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+
+    if (error instanceof ApiError) throw error;
+
+    throw new ApiError(502, "Gemini evaluation failed");
+  }
 };
 
 const parseJSONResponse = (rawText) => {
@@ -29,7 +66,7 @@ const parseJSONResponse = (rawText) => {
   try {
     return JSON.parse(cleaned);
   } catch (err) {
-    throw new Error("Failed to parse Gemini JSON response: " + err.message);
+    throw new ApiError(500, "Failed to parse Gemini JSON response: " + err.message);
   }
 };
 
@@ -103,8 +140,9 @@ Return ONLY valid JSON (no markdown) in this exact shape:
   "feedback": "specific, constructive feedback in 2-3 sentences",
   "improvementTip": "one concrete tip to improve this answer"
 }
+Be concise. Do not explain your scoring process.
 `;
-  const raw = await callGemini(prompt);
+  const raw = await callGemini(prompt, { temperature: 0.2 }, "gemini-3.5-flash-lite");
   return parseJSONResponse(raw);
 };
 

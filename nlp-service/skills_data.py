@@ -1,11 +1,3 @@
-"""
-Curated skill keyword database used by spaCy's PhraseMatcher to identify
-technical and soft skills within resume text (Module 5: Skill Extraction).
-
-Add to these lists over time as you see resumes with skills that aren't
-being picked up.
-"""
-
 PROGRAMMING_LANGUAGES = [
     "Java", "Python", "JavaScript", "TypeScript", "C++", "C#", "C",
     "Go", "Golang", "Rust", "Ruby", "PHP", "Swift", "Kotlin", "Scala",

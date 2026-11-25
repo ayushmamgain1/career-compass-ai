@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { Send, CheckCircle2 } from "lucide-react";
-import { fetchInterviewById, submitAnswer, completeInterview, clearCurrentInterview } from "../features/interview/interviewSlice";
+import { fetchInterviewById, submitAnswer, completeInterview } from "../features/interview/interviewSlice";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Textarea from "../components/ui/Textarea";
@@ -23,10 +23,7 @@ export default function InterviewSessionPage() {
     if (!currentInterview || currentInterview._id !== id) {
       dispatch(fetchInterviewById(id));
     }
-    return () => {
-      dispatch(clearCurrentInterview());
-    };
-  }, [dispatch, id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch, id]);
 
   if (!currentInterview) return <Loader label="Bringing up the transcript…" />;
 

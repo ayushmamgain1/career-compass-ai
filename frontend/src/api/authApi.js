@@ -1,29 +1,38 @@
 import { axiosClient } from "./axiosClient";
 
-// NOTE on response shapes: this backend wraps successful responses in an
-// ApiResponse class as { statusCode, data, message, success }, so the actual
-// payload always sits one level deeper than a typical axios response
-// (response.data.data, not response.data). Each function below unwraps to
-// exactly the shape components need.
-
 export const authApi = {
   register: async ({ name, email, password }) => {
     const res = await axiosClient.post("/auth/register", { name, email, password });
-    return res.data.data; // { _id, name, email, token }
+    return res.data.data;
+  },
+
+  verifyOtp: async ({ email, otp }) => {
+    const res = await axiosClient.post("/auth/verify-otp", { email, otp });
+    return res.data.data;
+  },
+
+  resendOtp: async (email) => {
+    const res = await axiosClient.post("/auth/resend-otp", { email });
+    return res.data.data;
+  },
+
+  googleLogin: async (credential) => {
+    const res = await axiosClient.post("/auth/google", { credential });
+    return res.data.data;
   },
 
   login: async ({ email, password }) => {
     const res = await axiosClient.post("/auth/login", { email, password });
-    return res.data.data; // { _id, name, email, token }
+    return res.data.data;
   },
 
   getProfile: async () => {
     const res = await axiosClient.get("/auth/profile");
-    return res.data.data.user; // getUserProfile nests the user under `user`
+    return res.data.data.user;
   },
 
   updateProfile: async (payload) => {
     const res = await axiosClient.put("/auth/profile", payload);
-    return res.data.data; // { _id, name, email, careerGoal, currentSkills }
+    return res.data.data;
   },
 };

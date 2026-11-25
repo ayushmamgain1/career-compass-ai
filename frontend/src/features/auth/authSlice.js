@@ -10,41 +10,46 @@ const initialState = {
   token: existingToken || null,
   isAuthenticated: Boolean(existingToken),
   status: "idle",
+  resendStatus: "idle",
   bootstrapped: !existingToken,
   error: null,
 };
 
-export const registerUser = createAsyncThunk("auth/register", async (payload, { rejectWithValue }) => {
-  try {
-    return await authApi.register(payload);
-  } catch (err) {
-    return rejectWithValue(extractErrorMessage(err));
-  }
-});
+const createAuthThunk = (type, request) =>
+  createAsyncThunk(type, async (arg, { rejectWithValue }) => {
+    try {
+      return await request(arg);
+    } catch (err) {
+      return rejectWithValue(extractErrorMessage(err));
+    }
+  });
 
-export const loginUser = createAsyncThunk("auth/login", async (payload, { rejectWithValue }) => {
-  try {
-    return await authApi.login(payload);
-  } catch (err) {
-    return rejectWithValue(extractErrorMessage(err));
-  }
-});
+export const registerUser = createAuthThunk("auth/register", authApi.register); // emails the OTP
+export const verifyOtp = createAuthThunk("auth/verifyOtp", authApi.verifyOtp); // creates the account + signs in
+export const resendOtp = createAuthThunk("auth/resendOtp", authApi.resendOtp);
+export const googleLogin = createAuthThunk("auth/google", authApi.googleLogin);
+export const loginUser = createAuthThunk("auth/login", authApi.login);
+export const fetchProfile = createAuthThunk("auth/fetchProfile", authApi.getProfile);
+export const updateProfile = createAuthThunk("auth/updateProfile", authApi.updateProfile);
 
-export const fetchProfile = createAsyncThunk("auth/fetchProfile", async (_, { rejectWithValue }) => {
-  try {
-    return await authApi.getProfile();
-  } catch (err) {
-    return rejectWithValue(extractErrorMessage(err));
-  }
-});
+const startLoading = (state) => {
+  state.status = "loading";
+  state.error = null;
+};
 
-export const updateProfile = createAsyncThunk("auth/updateProfile", async (payload, { rejectWithValue }) => {
-  try {
-    return await authApi.updateProfile(payload);
-  } catch (err) {
-    return rejectWithValue(extractErrorMessage(err));
-  }
-});
+const failWith = (state, action) => {
+  state.status = "failed";
+  state.error = action.payload;
+};
+
+const signIn = (state, action) => {
+  state.status = "succeeded";
+  state.user = action.payload;
+  state.token = action.payload.token;
+  state.isAuthenticated = true;
+  state.bootstrapped = true;
+  tokenStorage.set(action.payload.token);
+};
 
 const authSlice = createSlice({
   name: "auth",
@@ -63,36 +68,31 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(registerUser.pending, (state) => {
-        state.status = "loading";
+      .addCase(registerUser.pending, startLoading)
+      .addCase(registerUser.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(registerUser.rejected, failWith)
+
+      .addCase(verifyOtp.pending, startLoading)
+      .addCase(verifyOtp.fulfilled, signIn)
+      .addCase(verifyOtp.rejected, failWith)
+      .addCase(googleLogin.pending, startLoading)
+      .addCase(googleLogin.fulfilled, signIn)
+      .addCase(googleLogin.rejected, failWith)
+      .addCase(loginUser.pending, startLoading)
+      .addCase(loginUser.fulfilled, signIn)
+      .addCase(loginUser.rejected, failWith)
+
+      .addCase(resendOtp.pending, (state) => {
+        state.resendStatus = "loading";
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.user = action.payload;
-        state.token = action.payload.token;
-        state.isAuthenticated = true;
-        state.bootstrapped = true;
-        tokenStorage.set(action.payload.token);
+      .addCase(resendOtp.fulfilled, (state) => {
+        state.resendStatus = "succeeded";
       })
-      .addCase(registerUser.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
-      })
-      .addCase(loginUser.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.user = action.payload;
-        state.token = action.payload.token;
-        state.isAuthenticated = true;
-        state.bootstrapped = true;
-        tokenStorage.set(action.payload.token);
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.status = "failed";
+      .addCase(resendOtp.rejected, (state, action) => {
+        state.resendStatus = "failed";
         state.error = action.payload;
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
@@ -107,9 +107,13 @@ const authSlice = createSlice({
         state.bootstrapped = true;
         tokenStorage.clear();
       })
+
+      .addCase(updateProfile.pending, startLoading)
       .addCase(updateProfile.fulfilled, (state, action) => {
+        state.status = "succeeded";
         state.user = { ...state.user, ...action.payload };
-      });
+      })
+      .addCase(updateProfile.rejected, failWith);
   },
 });
 

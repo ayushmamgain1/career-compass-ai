@@ -5,7 +5,7 @@ import { extractErrorMessage } from "../../api/axiosClient";
 const initialState = {
   interviews: [],
   currentInterview: null,
-  lastFeedback: null, // { questionIndex, score, feedback, improvementTip } - most recent answer's feedback
+  lastFeedback: null,
   listStatus: "idle",
   startStatus: "idle",
   answerStatus: "idle",

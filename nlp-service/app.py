@@ -1,18 +1,3 @@
-"""
-Career Compass AI - NLP Microservice (Python + spaCy)
-
-Exposes skill extraction as an HTTP API that the Node.js backend calls
-into (see services/nlpService.js on the Node side).
-
-Run locally:
-    pip install -r requirements.txt
-    python -m spacy download en_core_web_sm
-    python app.py
-
-Production:
-    gunicorn -w 2 -b 0.0.0.0:5001 app:app
-"""
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from skill_extractor import extract_skills

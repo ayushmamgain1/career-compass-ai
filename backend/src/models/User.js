@@ -18,9 +18,25 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: function () {
+        return this.authProvider !== "google";
+      },
       minlength: 6,
       select: false,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "google", "both"],
+      default: "local",
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: true,
     },
     careerGoal: {
       type: String,
@@ -38,14 +54,22 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.path("password").validate(function (value) {
+  if (this.authProvider === "google") return !value;
+  return Boolean(value);
+}, "Password is required");
+
 // Hash password before saving
 userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+  if (!this.isModified("password") || !this.password) return;
+  if (this.$locals.passwordAlreadyHashed) return;
   this.password = await bcrypt.hash(this.password, 10);
 });
 
 // Compare entered password with hashed password
 userSchema.methods.matchPassword = async function (enteredPassword) {
+  if (!this.password) return false;
+
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

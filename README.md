@@ -265,7 +265,7 @@ Create `frontend/.env` from `.env.example`:
 ```env
 VITE_API_BASE_URL=http://localhost:5000/api
 VITE_SOCKET_URL=http://localhost:5000
-VITE_CLIENT_ID=your_google_oauth_client_id
+VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
 ```
 
 Run the development server:
@@ -325,7 +325,7 @@ For exact request bodies, response formats, and parameter requirements, refer to
 | `OTP_SECRET` | OTP-related secret configuration |
 | `VITE_API_BASE_URL` | Frontend API base URL |
 | `VITE_SOCKET_URL` | Frontend Socket.IO server URL |
-| `VITE_CLIENT_ID` | Google OAuth client ID used by the frontend |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID used by the frontend |
 
 ## 🧪 Scripts
 
